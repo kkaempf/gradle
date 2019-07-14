@@ -32,6 +32,8 @@ public class DurationMeasurementImpl implements DurationMeasurement {
 
     @Override
     public void start() {
+        maybeRunGc();
+
         start = DateTime.now();
         startNanos = System.nanoTime();
     }
@@ -43,6 +45,13 @@ public class DurationMeasurementImpl implements DurationMeasurement {
         measuredOperation.setStart(start);
         measuredOperation.setEnd(end);
         measuredOperation.setTotalTime(Duration.millis((endNanos - startNanos) / 1000000L));
+
+        maybeRunGc();
+    }
+
+    private void maybeRunGc() {
+        System.gc();
+        System.runFinalization();
     }
 
     public static void measure(MeasuredOperation measuredOperation, Runnable runnable) {

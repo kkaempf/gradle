@@ -31,8 +31,12 @@ class JavaUpToDatePerformanceTest extends AbstractCrossVersionPerformanceTest {
     @Unroll
     def "up-to-date assemble on #testProject (parallel #parallel)"() {
         given:
+        def runGcTaskName = "runGc"
+
         runner.testProject = testProject
         runner.gradleOpts = ["-Xms${testProject.daemonMemory}", "-Xmx${testProject.daemonMemory}"]
+        runner.args = ['--init-script', runGcTask(runGcTaskName).absolutePath]
+        runner.cleanTasks = [runGcTaskName]
         runner.tasksToRun = ['assemble']
         runner.targetVersions = ["5.6-20190711105409+0000"]
         runner.args += ["-Dorg.gradle.parallel=$parallel"]
@@ -48,6 +52,21 @@ class JavaUpToDatePerformanceTest extends AbstractCrossVersionPerformanceTest {
         LARGE_MONOLITHIC_JAVA_PROJECT | false
         LARGE_JAVA_MULTI_PROJECT      | true
         LARGE_JAVA_MULTI_PROJECT      | false
+    }
+
+    private runGcTask(runGcTaskName) {
+        def result = File.createTempFile("benchmarkInitTasks", ".gradle")
+        result.deleteOnExit()
+        result.text = """
+            import static java.lang.management.ManagementFactory.garbageCollectorMXBeans
+
+            rootProject {
+                task ${runGcTaskName} { // run as part of the clean, before measurements
+                    System.gc()
+                }
+            }
+        """
+        return result
     }
 
     @Unroll
