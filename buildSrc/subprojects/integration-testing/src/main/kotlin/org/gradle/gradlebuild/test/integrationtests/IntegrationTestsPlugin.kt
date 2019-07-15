@@ -37,5 +37,12 @@ class IntegrationTestsPlugin : Plugin<Project> {
         // TODO Model as an extension object. The name is also misleading, as this applies to integration tests as well as cross version tests.
         @Suppress("unused_variable")
         val integTestTasks by extra { tasks.withType<IntegrationTest>() }
+
+        integTestTasks.configureEach {
+            // TeamCity tries to change java.io.tmpdir from an init script for all Test tasks. This interferes with some of our tests
+            // https://github.com/JetBrains/teamcity-gradle/commit/c0e0a466cb830497f64ee259c91fb573878ddb03#diff-4c0238f19a912c0f92c028de1ce61366
+            // https://github.com/JetBrains/teamcity-gradle/blob/c0e0a466cb830497f64ee259c91fb573878ddb03/gradle-runner-agent/src/main/scripts/init.gradle
+            systemProperties.remove("java.io.tmpdir")
+        }
     }
 }
