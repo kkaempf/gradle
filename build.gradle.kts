@@ -189,9 +189,6 @@ apply(plugin = "gradlebuild.update-versions")
 apply(plugin = "gradlebuild.dependency-vulnerabilities")
 apply(plugin = "gradlebuild.add-verify-production-environment-task")
 
-// https://github.com/gradle/gradle-private/issues/2463
-apply(from = "gradle/remove-teamcity-temp-property.gradle")
-
 allprojects {
     apply(plugin = "gradlebuild.dependencies-metadata-rules")
 }
@@ -397,4 +394,3 @@ allprojects {
         fileMode = Integer.parseInt("0644", 8)
     }
 }
-
