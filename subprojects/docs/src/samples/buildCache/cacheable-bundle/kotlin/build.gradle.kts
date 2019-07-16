@@ -1,3 +1,5 @@
+import org.gradle.internal.fingerprint.NameOnlyInputNormalizer
+
 plugins {
     base
 }
@@ -26,10 +28,12 @@ tasks.register<NpmTask>("bundle") {
     inputs.dir(file("scripts"))
         .withPropertyName("scripts")
         .withPathSensitivity(PathSensitivity.RELATIVE)
+        .withNormalizer(NameOnlyInputNormalizer::class)
 
     inputs.files("package.json", "package-lock.json")
         .withPropertyName("configFiles")
         .withPathSensitivity(PathSensitivity.RELATIVE)
+        .withNormalizer(NameOnlyInputNormalizer::class)
 
     outputs.file("$buildDir/bundle.js")
         .withPropertyName("bundle")
