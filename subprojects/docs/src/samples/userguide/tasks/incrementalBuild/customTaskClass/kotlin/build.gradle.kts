@@ -1,4 +1,8 @@
-import org.example.*
+import org.example.ProcessTemplates
+import org.example.ProcessTemplatesNoAnnotations
+import org.example.TemplateData
+import org.example.TemplateEngineType
+import org.gradle.internal.fingerprint.NameOnlyInputNormalizer
 
 plugins {
     base
@@ -15,9 +19,12 @@ val processTemplates by tasks.registering(ProcessTemplates::class) {
 tasks.register("processTemplatesAdHoc") {
     inputs.property("engine", TemplateEngineType.FREEMARKER)
     inputs.files(fileTree("src/templates"))
+        .withPropertyName("sourceFiles")
+        .withNormalizer(NameOnlyInputNormalizer::class)
     inputs.property("templateData.name", "docs")
     inputs.property("templateData.variables", mapOf("year" to "2013"))
     outputs.dir("$buildDir/genOutput2")
+        .withPropertyName("outputDir")
 
     doLast {
         // Process the templates here
@@ -42,9 +49,12 @@ tasks.register<ProcessTemplatesNoAnnotations>("processTemplatesRuntime") {
 
     inputs.property("engine", templateEngine)
     inputs.files(sourceFiles)
+        .withPropertyName("sourceFiles")
+        .withNormalizer(NameOnlyInputNormalizer)
     inputs.property("templateData.name", templateData.name)
     inputs.property("templateData.variables", templateData.variables)
     outputs.dir(outputDir)
+        .withPropertyName("outputDir")
 }
 // end::custom-class-runtime-api[]
 
@@ -60,13 +70,17 @@ tasks.register<ProcessTemplatesNoAnnotations>("processTemplatesRuntimeConf") {
         include("**/*.fm")
     }
 
-    inputs.files(sourceFiles).skipWhenEmpty()
+    inputs.files(sourceFiles)
+        .skipWhenEmpty()
+        .withPropertyName("sourceFiles")
+        .withNormalizer(NameOnlyInputNormalizer::class)
     // ...
 // end::runtime-api-conf[]
     inputs.property("engine", templateEngine)
     inputs.property("templateData.name", templateData.name)
     inputs.property("templateData.variables", templateData.variables)
     outputs.dir(outputDir)
+        .withPropertyName("outputDir")
 // tag::runtime-api-conf[]
 }
 // end::runtime-api-conf[]
