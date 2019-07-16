@@ -168,8 +168,11 @@ task copyMethod {
 // tag::copy-method-with-dependency[]
 task copyMethodWithExplicitDependencies {
     // up-to-date check for inputs, plus add copyTask as dependency
-    inputs.files copyTask
-    outputs.dir 'some-dir' // up-to-date check for outputs
+    inputs.files(copyTask)
+        .withPropertyName("inputs")
+        .withNormalizer(NameOnlyInputNormalizer)
+    outputs.dir('some-dir') // up-to-date check for outputs
+        .withPropertyName("outputDir")
     doLast{
         copy {
             // Copy the output of copyTask
@@ -199,6 +202,7 @@ task rename (type: Copy) {
 // tag::filter-files[]
 import org.apache.tools.ant.filters.FixCrLfFilter
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.internal.fingerprint.NameOnlyInputNormalizer
 
 task filter(type: Copy) {
     from 'src/main/webapp'

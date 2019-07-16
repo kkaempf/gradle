@@ -1,6 +1,8 @@
 // tag::filter-files[]
 import org.apache.tools.ant.filters.FixCrLfFilter
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.internal.fingerprint.NameOnlyInputNormalizer
+
 // end::filter-files[]
 
 version = "1.1"
@@ -173,7 +175,10 @@ tasks.register("copyMethod") {
 tasks.register("copyMethodWithExplicitDependencies") {
     // up-to-date check for inputs, plus add copyTask as dependency
     inputs.files(copyTask)
+        .withPropertyName("inputs")
+        .withNormalizer(NameOnlyInputNormalizer::class)
     outputs.dir("some-dir") // up-to-date check for outputs
+        .withPropertyName("outputDir")
     doLast {
         copy {
             // Copy the output of copyTask
