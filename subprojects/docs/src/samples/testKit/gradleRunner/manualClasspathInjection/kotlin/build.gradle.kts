@@ -1,3 +1,5 @@
+import org.gradle.internal.fingerprint.NameOnlyInputNormalizer
+
 plugins {
     groovy
 }
@@ -21,7 +23,10 @@ tasks.register("createClasspathManifest") {
     val outputDir = file("$buildDir/$name")
 
     inputs.files(sourceSets.main.get().runtimeClasspath)
+        .withPropertyName("runtimeClasspath")
+        .withNormalizer(NameOnlyInputNormalizer::class)
     outputs.dir(outputDir)
+        .withPropertyName("outputDir")
 
     doLast {
         outputDir.mkdirs()
